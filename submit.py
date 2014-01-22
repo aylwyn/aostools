@@ -1,10 +1,9 @@
 #!/software/bin/python
-# Aylwyn Scally 2010
+# Aylwyn Scally 2014
 
 import sys
 import getopt
 import subprocess
-#from glob import glob
 import os
 import os.path
 from time import strftime
@@ -16,7 +15,8 @@ import string
 
 #locale.setlocale(locale.LC_ALL, 'en_GB')
 
-from bputil import *
+from aosutils import *
+#from bputil import *
 
 # global defaults
 sim = 0
