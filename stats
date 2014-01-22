@@ -1,0 +1,20 @@
+#!/usr/bin/awk -f
+
+BEGIN{
+	c=1 # column
+	h = 0 # headerlines
+}
+
+# online algorithm for mean and variance (Knuth)
+NR>h{
+	x=$c
+	s+=x
+	d=x-m
+	m+=d/(NR-h)
+	m2+=d*(x-m)
+}
+
+END{
+	v=m2/(NR-1-h)
+	print("mean",m,"\ns.e.m.",sqrt(v/NR),"\nvar",v,"\nstd_dev",sqrt(v),"\nCV",sqrt(v)/m,"\nN",NR-h,"\nsum",s)
+}

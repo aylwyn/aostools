@@ -1,0 +1,35 @@
+#!/usr/bin/awk -f
+#BEGIN{if(!c){c=1};if(!d){d=2}}{x[$c"\t"$d]++;y[$c]++}END{for(k in x){print(k"\t"x[k]"\t"x[k]/y[substr(k,1,match(k,"\t")-1)])}}'\'''
+
+BEGIN{
+	if(!c){
+		c=1 # column
+	}
+	if(!m){
+		m=0 # max value
+	}
+	s = 1 # set = 0 to print counts only
+}
+
+m>0 && $c > m{
+	$c=m
+}
+
+{
+	x[$c]++
+}
+
+END{
+	if (s){
+		n = asorti(x, z)
+		for (i = 1; i <= n; i++){
+			k = z[i]
+			print(k"\t"x[k]"\t"x[k]/NR)
+		}
+	}else{
+		for(k in x){print(k"\t"x[k])}
+	}
+	if (t){
+		print("TOTAL\t"NR)
+	}
+}

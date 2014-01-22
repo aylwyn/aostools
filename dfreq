@@ -1,0 +1,32 @@
+#!/usr/bin/awk -f
+
+BEGIN{
+	OFS = "\t"
+	if(!c){
+		c=1
+	}
+	if(!d){
+		d=2
+	}
+}
+
+{
+	x[$c"\t"$d]++
+	y[$c]++
+}
+
+END{
+	n = asorti(x, z)
+	for (i = 1; i <= n; i++){
+		k = z[i]
+# 	for(k in x){
+		l = substr(k,1,match(k,"\t")-1)
+		if (t && l != l0){
+			print("")
+			print(l, "", y[l], y[l]/NR)
+#			print("-------------------------------------------------------")
+		}
+		l0 = l
+		print(k, x[k], x[k]/y[l])
+	}
+}

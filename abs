@@ -1,0 +1,47 @@
+#!/software/bin/python
+# Aylwyn Scally 2012
+
+import sys
+import getopt
+import getpass
+import os
+import os.path
+
+def usage():
+    print 'usage: abs [file] ... [-h] [-u] [-a] [-f]'
+
+hostname = ''
+username = ''
+homepath = os.path.expanduser('~') + '/'
+force = False
+
+try:
+    opts, args = getopt.gnu_getopt(sys.argv[1:], 'afhu', [])
+except getopt.GetoptError:
+    usage()
+    sys.exit(2)
+
+for (oflag, oarg) in opts:
+    if oflag == '-h':
+        hostname = os.uname()[1] + ':'
+    if oflag == '-u':
+        username = getpass.getuser() + '@'
+        hostname = os.uname()[1] + ':'
+    if oflag == '-f':
+		force = True
+    if oflag == '-a':
+		homepath = ''
+
+if not args:
+	args = ['.']
+
+for file in args:
+	if not (os.path.exists(file) or force):
+		sys.stderr.write('abs: %s not found; use -f to force\n' % file)
+		continue
+	fpath = os.path.abspath(file)
+	if homepath and fpath.startswith(homepath):
+#		hl = len(os.path.commonprefix([homepath, fpath]))
+		fpath = fpath[len(homepath):]
+	print(username + hostname + fpath)
+
