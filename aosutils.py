@@ -1,13 +1,10 @@
-#!/software/bin/python
-# Aylwyn Scally 2009
+# Aylwyn Scally 2014
 
 import sys
 import subprocess
 import glob
 import os
 import os.path
-import logging
-from logging import error, warning, info, debug, critical
 
 def fwrite(name, data, mode = 'w'):
 	fname = open(name, mode)
@@ -19,43 +16,6 @@ def fwrite(name, data, mode = 'w'):
 		fname.writelines('\n'.join(data))
 	fname.write('\n')
 	fname.close()
-
-def jobstatus(bout):
-	if not os.path.exists(bout):
-		info('%s not found' % bout)
-		return((-2, 'absent'))
-	repstat = (-1, 'incomplete')
-	for line in open(bout):
-		if line.startswith('Subject: Job'):
-			jobstat = line.split()[-1]
-			if jobstat == 'Done':
-				repstat = (0, jobstat)
-			else:
-				repstat = (1, jobstat)
-#				info('job status %s in %s' % (jobstat, bout))
-				break
-	return(repstat)
-
-def jobdone(bout, firstonly = False):
-	if not os.path.exists(bout):
-		error('%s not found' % bout)
-		return(False)
-	repstat = -1
-	for line in open(bout):
-		if line.startswith('Subject: Job'):
-			jobstat = line.split()[-1]
-			if jobstat == 'Done':
-				repstat = 1
-			else:
-				repstat = 0
-				info('job status %s in %s' % (jobstat, bout))
-				break
-			if firstonly:
-				break
-	if repstat < 0:
-		info('unable to determine job status in %s' % bout)
-	return(repstat == 1)
-
 
 def VmB(pid, VmKey):
 	scale = {'kB': 1024, 'mB': 1024*1024, 'KB': 1024, 'MB': 1024*1024}
