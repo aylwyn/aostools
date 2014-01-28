@@ -5,6 +5,7 @@ import subprocess
 import glob
 import os
 import os.path
+import re
 
 def fwrite(name, data, mode = 'w'):
 	fname = open(name, mode)
@@ -35,11 +36,23 @@ def dirglob(pattern):
 	return(filter(os.path.isdir, glob.glob(pattern)))
 
 
+def atoi(text):
+	if text.isdigit():
+		return(int(text))
+	else:
+		return(text)
+
+def natural_key(text):
+	'''usage: chrnames.sort(key=natural_key). http://nedbatchelder.com/blog/200712/human_sorting.html '''
+	return([ atoi(c) for c in re.split('(\d+)', text) ])
+
+
 def subcall(cmd, sim, dir = '', wait = False, timeout = 0, outfile = '', pipe = False, memlim = 0):
 	import time, signal
 
 #	debug(sim)
-	if sim > 1:
+#	if sim > 1:
+	if sim:
 		if dir:
 			print('SIM: in %s:\n\t%s' % (dir, cmd))
 		else:
