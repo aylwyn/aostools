@@ -132,3 +132,35 @@ def relpath(path, dir = '.'):
 		uniqpath = uniqpath[1:]
 	lenuniq = len(uniqpath.split(os.sep))
 	return os.path.normpath(os.path.join(os.sep.join(lenuniq * [os.pardir]), apath[len(commonpath):]))
+
+def fnum(num, sf = 3):
+	"""Round num to sf sig figs and format compactly"""
+
+	s = []
+	nf = 0
+	ppos = -1
+	for x in str(num):
+#	   print((x, s))
+		if x == '.':
+			ppos = len(s)
+			continue
+		if nf == 0 and ppos < 0 and x == '0':
+			continue
+		s.append(x)
+		if x != '-':
+			nf += 1
+		if ppos >= 0 and nf > sf:
+			if int(s[-1]) >= 5:
+				s[-2] = str(int(s[-2]) + 1)
+			s = s[:-1]
+			break
+	if len(s) == 0:
+		s = ['0']
+	if ppos >= 0:
+		s.insert(ppos, '.')
+		if s[0] == '.':
+			s.insert(0, '0')
+		return(''.join(s).rstrip('0').rstrip('.'))
+	else:
+		return(''.join(s))
+
