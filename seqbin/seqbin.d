@@ -10,7 +10,7 @@ import std.string;
 //import std.algorithm;
 
 void usage(string cname){
-	writefln("usage:\n%s [[-C chr_col] -p pos_col | -t] [-c count1_col[,count2_col ...]] [-m mean1_col[,mean2_col ...]] [-b binsize | -B binfile | -n binlines] [-H] < chr_file\n\t-t: count total; -H: print headers", cname);
+	writefln("usage:\n%s [[-C chr_col] -p pos_col | -t] [-c count1_col[,count2_col ...]] [-m mean1_col[,mean2_col ...]] [-b binsize [-F] | -B binfile | -n binlines] [-H] < chr_file\n\t-t: count total; -H: print headers", cname);
 }
 
 class DataBin{ // bin size variable
@@ -46,7 +46,7 @@ class DataBin{ // bin size variable
 				vals ~= to!string(e / linesread);
 			writeln(std.array.join(vals, "\t"));
 		}
-		start = pos;
+//		start = pos;
 		linesread = 0;
 		count[] = 0;
 		meancount[] = 0;
@@ -125,6 +125,7 @@ void main(string[] args) {
 	bool dummy;
 	bool total = false;
 	bool printheaders = false;
+	bool fixedbins = false;
 //	string colstr = "1,2,3";
 	int poscol = 1;
 	int chrcol = 0;
@@ -141,6 +142,7 @@ void main(string[] args) {
 			"binfile|B", &binfile,
 			"binlines|n", &binlines,
 			"printheaders|H", &printheaders,
+			"fixedbins|F", &fixedbins,
 			"total|t", &total,
 			"nocpg", &opthandler,
 			"chrcol|C", &chrcol,
@@ -214,12 +216,19 @@ void main(string[] args) {
 					bin.chr = to!string(tok[chrcol]);
 				newpos = to!long(tok[poscol]);
 				if (bin.start == 0)
-					bin.start = newpos;
+					if (fixedbins)
+						bin.start = 1;
+					else
+						bin.start = newpos;
 				if ((binlines > 0 && bin.linesread >= binlines) || (binlines == 0 && newpos - bin.start + 1 > binsize)){
 	//				writeln(bin.start, " ", pos, " ", newpos);
-					bin.output(pos, total);
-					bin.start = newpos;
-					//if fixed bins, bin.start += binsize
+					if (fixedbins){
+						bin.output(bin.start + binsize - 1, total);
+						bin.start += binsize;
+					}else{
+						bin.output(pos, total);
+						bin.start = newpos;
+					}
 				}
 				pos = newpos;
 			}
