@@ -6,6 +6,7 @@ import glob
 import os
 import os.path
 import re
+from logging import error, warning, info, debug, critical
 
 def fwrite(name, data, mode = 'w'):
 	fname = open(name, mode)
