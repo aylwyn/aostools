@@ -100,6 +100,10 @@ if outname:
 	bout = outname + bout_suffix
 	if output:
 		args += ['>', outname]
+	elif os.path.exists(bout) and not replace:
+		if not rerun:
+			warning('%s exists; use --replace' % bout)
+		sys.exit(2)
 	if os.path.exists(outname) and not replace:
 		if not rerun:
 			warning('%s exists; use --replace' % outname)
@@ -125,7 +129,8 @@ cmd = 'bsub -o %s -G %s ' % (bout, grpname)
 #cmd = 'bsub -o %s ' % (bout)
 if jobname:
 	cmd += '-J"%s" ' % (jobname)
-cmd += '%s \'%s\'' % (bsub_args, ' '.join(args))
+#cmd += '%s \'%s\'' % (bsub_args, ' '.join(args))
+cmd += '%s "%s"' % (bsub_args, ' '.join(args))
 
 info('submitting \'%s\'; output in %s' % (' '.join(args), bout))
 subcall(cmd, sim, wait = True)
