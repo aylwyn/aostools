@@ -148,7 +148,7 @@ def fnum(num, sf = 3):
 		if nf == 0 and ppos < 0 and x == '0':
 			continue
 		s.append(x)
-		if x != '-':
+		if x != '-' and (x != '0' or nf > 0):
 			nf += 1
 		if ppos >= 0 and nf > sf:
 			if int(s[-1]) >= 5:
