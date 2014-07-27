@@ -50,9 +50,13 @@ def checkclear(args, bout):
 def nohup(args):
 	bout = setbout(args)
 	if args.outname and not args.no_output:
-		args.ARG += ['>', args.outname]
+		if args.zipout:
+			args.outname += '.gz'
+			args.ARG += ['2>', bout, '| gzip >', args.outname]
+		else:
+			args.ARG += ['>', args.outname, '2>', bout]
 	checkclear(args, bout)
-	cmd = 'nohup %s 2> %s' % (' '.join(args.ARG), bout)
+	cmd = 'nohup %s' % (' '.join(args.ARG))
 
 	info('submitting \'%s\'; output in %s' % (' '.join(args.ARG), bout))
 	subcall(cmd, args.sim)
@@ -70,7 +74,11 @@ def bsub(args):
 
 	bout = setbout(args)
 	if args.outname and not args.no_output:
-		args.ARG += ['>', args.outname]
+		if args.zipout:
+			args.outname += '.gz'
+			args.ARG += ['| gzip >', args.outname]
+		else:
+			args.ARG += ['>', args.outname]
 	checkclear(args, bout)
 	cmd = 'bsub -o %s -G %s ' % (bout, args.grpname)
 	if args.jobname:
@@ -88,6 +96,7 @@ pp.add_argument('-v', '--verbose', action='store_true', default = False)
 pp.add_argument('--debug', action='store_true', default = False, help=argparse.SUPPRESS)
 pp.add_argument('-o', '--outname', help='output file name (used for bout file if --no_output)')
 pp.add_argument('--no_output', action='store_true', default = False, help='cmd has no output')
+pp.add_argument('--zipout', action='store_true', default = False, help='pipe output through gzip')
 pp.add_argument('ARG', nargs='*', help='command arguments to execute')
 
 p = argparse.ArgumentParser()
