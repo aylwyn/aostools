@@ -1,4 +1,4 @@
-#!/software/bin/python
+#!/usr/bin/env python
 # Aylwyn Scally 2012
 
 import sys
