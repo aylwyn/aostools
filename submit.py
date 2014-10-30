@@ -104,7 +104,8 @@ s = p.add_subparsers()
 
 p1 = s.add_parser('nohup', parents=[pp], help='simple execution with nohup')#, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 p1.add_argument('-d', '--dirpref', help='directory name prefix')
-p1.add_argument('--sepvcfs', action='store_true', default = False, help='process vcfs separately (need to merge subsequently)')
+p1.add_argument('-M', '--memG', type=float, default = 2.0, help=argparse.SUPPRESS)#TODO 'GB of RAM to use')
+p1.add_argument('-j', '--jobname', help=argparse.SUPPRESS)#TODO
 p1.set_defaults(func=nohup)
 
 p2 = s.add_parser('bsub', parents=[pp], help='submit to bsub')#, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
