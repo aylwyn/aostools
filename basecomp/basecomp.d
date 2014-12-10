@@ -9,18 +9,12 @@ import std.array;
 import std.ascii;
 import std.string;
 import std.algorithm;
-//import tango.io.Console;
-//import tango.io.FileConduit;
-//import tango.io.Stdout;
-//import tango.io.stream.TypedStream;
-//import tango.text.Util;
-//import tango.util.ArgParser;
-//import Int = tango.text.convert.Integer;
 
 bool lengthonly = false;
 
 void usage(string cname){
-	writefln("usage: %s [-t] [-l | L] [-f] < foo.fa", cname);
+	writefln("usage: %s [OPTIONS] < foo.fa", cname);
+	writefln("OPTIONS:\n-c\tprint sequence count (if more than 1)\n-t\tprint total only\n-l\tomit base composition\n-f\tfull sequence names");
 }
 
 void main (string[] args)
@@ -35,12 +29,12 @@ void main (string[] args)
 	int[256] count, tcount;
 	bool totalonly = false;
 	bool fullnames = false;
-	bool seqcount = true;
+	bool seqcount = false;
 
 	try{
 		getopt(args, std.getopt.config.caseSensitive,
 		"totalonly|t", &totalonly,
-		"lengthonly|t", &lengthonly,
+		"lengthonly|l", &lengthonly,
 		"seqcount|c", &seqcount,
 		"fullnames|f", &fullnames);
 	} catch (Exception e){
