@@ -22,18 +22,20 @@ outname = ''
 
 #os.umask(0002)
 
-def setbout(args):
+def setname(args, suffix):
 	if args.outname:
-		bout = args.outname + bout_suffix
+		rname = args.outname + suffix
 	else:
 		stardate = strftime("%y%m%d-%H%M")
 		cmdhash = str(hash(args.ARG[0]))
+		memstr = str(args.memG)
+		memstr += 'G'
 		cmdstr = cmdhash[-6:] + '-' + memstr
-		bout = stardate + '-' + cmdstr + bout_suffix
-	return(bout)
+		rname = stardate + '-' + cmdstr + suffix
+	return(rname)
 
 def checkclear(args, bout):
-	if not args.no_output:
+	if not args.no_output and args.outname:
 		if os.path.exists(args.outname) and not args.replace:
 			if not args.rerun:
 				warning('%s exists; use --replace' % args.outname)
@@ -48,31 +50,39 @@ def checkclear(args, bout):
 		os.remove(bout)
 
 def nohup(args):
-	bout = setbout(args)
+	bout = setname(args, bout_suffix)
 	if args.outname and not args.no_output:
 		if args.zipout:
 			args.outname += '.gz'
-			args.ARG += ['2>', bout, '| gzip >', args.outname]
+#			args.ARG += ['2>', bout, '| gzip >', args.outname]
+			args.ARG += ['| gzip >', args.outname]
 		else:
-			args.ARG += ['>', args.outname, '2>', bout]
+#			args.ARG += ['2>', bout, '1>', args.outname]
+			args.ARG += ['>', args.outname]
 	checkclear(args, bout)
-	cmd = 'nohup %s' % (' '.join(args.ARG))
 
-	info('submitting \'%s\'; output in %s' % (' '.join(args.ARG), bout))
-	subcall(cmd, args.sim)
+	cmd = ' '.join(args.ARG)
+	cmdname = setname(args, '.cmd')
+	if not args.sim:
+		cmdfile = open(cmdname, 'w')
+		cmdfile.write(cmd + '\n')
+		cmdfile.close()
+
+	info('submitting \'%s\'; output in %s' % (cmd, bout))
+	p = subcall('nohup bash %s > %s 2>&1' % (cmdname, bout) , args.sim)
+	if not args.sim:
+		info('process %s' % p.pid)
 
 def bsub(args):
 #	if args.memG > 0.0:
 	memM = args.memG * 1e3
 	memk = args.memG * 1e6
 	args.bsub_args += '-M%d -R"select[mem>%d] rusage[mem=%d]" ' % (memM, memM, memM)
-	memstr = str(args.memG)
-	memstr += 'G'
 
 	if args.threads > 1:
 		args.bsub_args += '-n%d -R"span[hosts=1]" ' % args.threads
 
-	bout = setbout(args)
+	bout = setname(args, bout_suffix)
 	if args.outname and not args.no_output:
 		if args.zipout:
 			args.outname += '.gz'
@@ -94,7 +104,7 @@ pp.add_argument('--rerun', action='store_true', default = False)#, help = 'rerun
 pp.add_argument('--sim', action='store_true', default = False, help = 'dry run')
 pp.add_argument('-v', '--verbose', action='store_true', default = False)
 pp.add_argument('--debug', action='store_true', default = False, help=argparse.SUPPRESS)
-pp.add_argument('-o', '--outname', help='output file name (used for bout file if --no_output)')
+pp.add_argument('-o', '--outname', default = '', help='output file name (used for bout file if --no_output)')
 pp.add_argument('--no_output', action='store_true', default = False, help='cmd has no output')
 pp.add_argument('--zipout', action='store_true', default = False, help='pipe output through gzip')
 pp.add_argument('ARG', nargs='*', help='command arguments to execute')
