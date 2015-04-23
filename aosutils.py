@@ -134,14 +134,14 @@ def relpath(path, dir = '.'):
 	lenuniq = len(uniqpath.split(os.sep))
 	return os.path.normpath(os.path.join(os.sep.join(lenuniq * [os.pardir]), apath[len(commonpath):]))
 
-def fnum(num, sf = 3):
-	"""Round num to sf sig figs and format compactly"""
+def fnum(num, sf = 0):
+	"""Round num to sf sig figs and format compactly; arbitrary precision if sf = 0"""
 
 	s = []
 	nf = 0
 	ppos = -1
 	for x in str(num):
-#	   print((x, s))
+#		print((x, s))
 		if x == '.':
 			ppos = len(s)
 			continue
@@ -150,7 +150,7 @@ def fnum(num, sf = 3):
 		s.append(x)
 		if x != '-' and (x != '0' or nf > 0):
 			nf += 1
-		if ppos >= 0 and nf > sf:
+		if ppos >= 0 and sf > 0 and nf > sf:
 			if int(s[-1]) >= 5:
 				s[-2] = str(int(s[-2]) + 1)
 			s = s[:-1]
