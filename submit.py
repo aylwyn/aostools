@@ -106,7 +106,7 @@ pp.add_argument('-v', '--verbose', action='store_true', default = False)
 pp.add_argument('--debug', action='store_true', default = False, help=argparse.SUPPRESS)
 pp.add_argument('-o', '--outname', default = '', help='output file name (used for bout file if --no_output)')
 pp.add_argument('--no_output', action='store_true', default = False, help='cmd has no output')
-pp.add_argument('--zipout', action='store_true', default = False, help='pipe output through gzip')
+pp.add_argument('-z', '--zipout', action='store_true', default = False, help='pipe output through gzip')
 pp.add_argument('ARG', nargs='*', help='command arguments to execute')
 
 p = argparse.ArgumentParser()
